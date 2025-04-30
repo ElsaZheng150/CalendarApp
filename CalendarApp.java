@@ -6,11 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class calendarApp extends Application { 
+public class CalendarApp extends Application { 
     public void start(Stage yearlyCalendarStage) 
     { 
         //title of page, opening screen with year
-        primaryStage.setTitle("Welcome to the Calendar App!");
+        yearlyCalendarStage.setTitle("Welcome to the Calendar App!");
 
         
 
@@ -23,6 +23,8 @@ public class calendarApp extends Application {
         monthlyView.setText("Current Month");
         dailyView.setText("Current Day");
         
+        //create scene
+        //Scene yearlyScene = new Scene(200, 200);
     }//end of start
     public static void main(String args[]) 
     { 
