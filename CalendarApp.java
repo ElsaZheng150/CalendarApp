@@ -11,7 +11,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.Group;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.scene.control.ScrollPane;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -56,12 +56,33 @@ public class CalendarApp extends Application {
     }//end of start()
 
     private Scene yearlyScene(){
+        //get current year
+        int currentYear = LocalDate.now().getYear();
+
+        //display year
+        Text theYear = new Text();
+        //set font
+        theYear.setFont(new Font(50));
+        //set text
+        theYear.setText("Current Year: " + currentYear);
+        
+        //change year button
+        Button changeYear = new Button("Change Year");
+
+        //VBox to set layout for year and button
+        VBox yearButton = new VBox();
+        yearButton.getChildren().addAll(theYear, changeYear);
+        //set spacing
+        yearButton.setPadding(new Insets(30));
+        //set alignment
+        yearButton.setAlignment(Pos.TOP_CENTER);
+        //set background color
+        yearButton.setStyle("-fx-background-color: green");
+
         //display yearly calendar in a grid structure
         GridPane months = new GridPane();
         months.setHgap(20);
         months.setVgap(20);
-        //get current year
-        int currentYear = LocalDate.now().getYear();
         //add calendars for each month into the GridPane
         //i=month
         for (int i=1; i<=12; i++){
@@ -96,7 +117,7 @@ public class CalendarApp extends Application {
         
         //layout: put calendar above navigation
         VBox layout = new VBox();
-        layout.getChildren().addAll(scroller, navigationBar);
+        layout.getChildren().addAll(yearButton, scroller, navigationBar);
 
         //creates scene 800 pixels wide by 800 pixels tall
         yearScene = new Scene(layout, 800, 800);
@@ -106,6 +127,26 @@ public class CalendarApp extends Application {
     }//end of yearScene()
 
     private Scene monthlyScene(){
+        //get current year and month
+        int currentYear = LocalDate.now().getYear();
+        int currentMonth = LocalDate.now().getMonthValue();
+
+        //display current month in text
+        //can you tell my variable names are getting worse lol
+        Text theMonth = new Text();
+        theMonth.setText(YearMonth.of(currentYear, currentMonth).getMonth().toString());
+        
+        //back button
+        Button back = new Button("Back");
+        //add event handler
+        back.setOnAction(e -> switchScenes(yearScene));
+
+        //HBox to display header
+        HBox header = new HBox(30, back, theMonth);
+        header.setPadding(new Insets(30));
+        //set alignment
+        header.setAlignment(Pos.TOP_CENTER);
+
         //navigator Buttons to Yearly, Monthly, and Daily Views
         Button yearlyView = new Button("Current Year");
         Button monthlyView = new Button("Current Month");
@@ -124,8 +165,16 @@ public class CalendarApp extends Application {
         //set color
         navigationBar.setStyle("-fx-background-color: green");
         
+        //monthly calendar
+        //call monthly calendar method
+        //VBox to set layout for everything
+        VBox mainContent = new VBox(30, header, createMonthlyCalendar(currentYear, currentMonth), navigationBar);
+        mainContent.setPadding(new Insets(30));
+        //set alignment
+        mainContent.setAlignment(Pos.CENTER);
+
         //creates scene 800 pixels wide by 800 pixels tall
-        monthScene = new Scene(navigationBar, 800, 800);
+        monthScene = new Scene(mainContent, 450, 450);
         monthScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return monthScene;
     }//end of monthlyScene()
