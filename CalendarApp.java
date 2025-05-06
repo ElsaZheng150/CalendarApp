@@ -48,6 +48,7 @@ public class CalendarApp extends Application {
         yearScene = yearlyScene();
         monthScene = monthlyScene();
         dayScene = dailyScene();
+        taskScene = taskScene();
 
         calendar.setScene(yearScene);
 
@@ -134,6 +135,9 @@ public class CalendarApp extends Application {
         //display current month in text
         //can you tell my variable names are getting worse lol
         Text theMonth = new Text();
+        //set font size
+        theMonth.setFont(new Font(50));
+        //set text
         theMonth.setText(YearMonth.of(currentYear, currentMonth).getMonth().toString());
         
         //back button
@@ -173,13 +177,58 @@ public class CalendarApp extends Application {
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
 
-        //creates scene 800 pixels wide by 800 pixels tall
+        //creates scene 450 pixels wide by 450 pixels tall, smaller due to less calendars
         monthScene = new Scene(mainContent, 450, 450);
         monthScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return monthScene;
     }//end of monthlyScene()
 
     private Scene dailyScene(){
+        //title of page
+        Text title = new Text();
+        //set font size
+        title.setFont(new Font(50));
+        //set text
+        title.setText("Welcome to the Day Scroller");
+
+        //back button
+        Button back = new Button("Back");
+        //add event handler
+        back.setOnAction(e -> switchScenes(monthScene));
+        
+        //HBox for header made up of title and back button
+        HBox header = new HBox(30, back, title);
+        header.setPadding(new Insets(30));
+        //set alignment
+        header.setAlignment(Pos.TOP_CENTER);
+
+        //display current day
+        Text theDay = new Text();
+        //set text font size
+        theDay.setFont(new Font(25));
+        //set text
+        theDay.setText(LocalDate.now().getDayOfWeek().toString());
+
+        //add task button
+        //sends user to task screen
+        Button addTask = new Button("Add Task");
+        //add event handler
+        addTask.setOnAction(e -> switchScenes(taskScene));
+
+        //delete button
+        Button deleteTask = new Button("Delete Task");
+        
+        //HBox for current date, add button, and delete button for layout purposes
+        //(D)ate + (A)dd task + (D)elete Task = DAD
+        HBox DAD = new HBox(30, deleteTask, theDay, addTask);
+        DAD.setPadding(new Insets(30));
+        //set alignment
+        DAD.setAlignment(Pos.CENTER);
+
+        //task list
+        Text list = new Text("To Do List: ");
+
+        //day scroller how to implement?
         //navigator Buttons to Yearly, Monthly, and Daily Views
         Button yearlyView = new Button("Current Year");
         Button monthlyView = new Button("Current Month");
@@ -197,14 +246,25 @@ public class CalendarApp extends Application {
 
         //set color
         navigationBar.setStyle("-fx-background-color: green");
+
+        //VBox to hold it all togther
+        VBox mainContent = new VBox(30, header, DAD, list, navigationBar);
+        mainContent.setPadding(new Insets(30));
+        //set alignment
+        mainContent.setAlignment(Pos.CENTER);
         
         //creates scene 800 pixels wide by 800 pixels tall
-        dayScene = new Scene(navigationBar, 800, 800);
+        dayScene = new Scene(mainContent, 800, 800);
         dayScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return dayScene;
     }//end of dailyScene()
 
     private Scene taskScene(){
+        //cancel button
+        Button cancel = new Button("Cancel");
+        //add event handler
+        //canceling sends user back to daily task scene
+        cancel.setOnAction(e -> switchScenes(dayScene));
         return taskScene;
     }//end of taskScene()
 
