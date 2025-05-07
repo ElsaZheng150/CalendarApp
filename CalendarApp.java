@@ -211,16 +211,11 @@ public class CalendarApp extends Application {
         //add event handler
         addTask.setOnAction(e -> switchScenes(taskScene));
 
-        //HBox for current date and add button for layout purposes
-        //(D)ate + (A)dd task + (B)utton = DAB
-        HBox DAB = new HBox(30, theDay, addTask);
-        DAB.setPadding(new Insets(30));
-        //set alignment
-        DAB.setAlignment(Pos.CENTER);
-
         //display the To Do List
         Text list = new Text("To Do List: ");
         VBox taskList = new VBox(10);
+        taskList.setPadding(new Insets(10));
+        taskList.setAlignment(Pos.CENTER); //set alignment
         //fill list with tasks
         updateTaskList(taskList, toDoList);
         //scroller in case of too many tasks
@@ -245,7 +240,7 @@ public class CalendarApp extends Application {
         navigationBar.setStyle("-fx-background-color: green");
 
         //VBox to hold it all togther
-        VBox mainContent = new VBox(30, header, DAB, list, scroller, navigationBar);
+        VBox mainContent = new VBox(30, header, theDay, addTask, list, scroller, navigationBar);
         mainContent.setPadding(new Insets(30));
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
@@ -398,6 +393,8 @@ public class CalendarApp extends Application {
         //for delete button
         for(taskAdder task: l){
             VBox t = new VBox(5);
+            t.setPadding(new Insets(5));
+            t.setAlignment(Pos.CENTER);
             t.setStyle("-fx-border-color: gray; -fx-padding: 10;");
             //display task details
             Label name = new Label("Task: " + task.getName());
@@ -414,6 +411,8 @@ public class CalendarApp extends Application {
             t.getChildren().addAll(name, time, details);
             //HBox for delete button formatting
             HBox f = new HBox(30, t, delete);
+            f.setPadding(new Insets(30));
+            f.setAlignment(Pos.CENTER);
             //add to original VBox
             b.getChildren().add(f);
         }//end of for loop
