@@ -2,17 +2,11 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.control.*;
 import javafx.scene.Group;
 import javafx.scene.text.*;
-import javafx.scene.control.ScrollPane;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -36,7 +30,7 @@ public class CalendarApp extends Application {
     //layout for navigation bar
     private HBox navigationBar;
     //ArrayList to hold tasks from taskAdder
-    private List<taskAdder> toDoList = new ArrayList<>();
+    public ArrayList<taskAdder> toDoList = new ArrayList<>();
     
     public static void main(String args[]) 
     { 
@@ -217,20 +211,21 @@ public class CalendarApp extends Application {
         //add event handler
         addTask.setOnAction(e -> switchScenes(taskScene));
 
-        //delete button
-        Button deleteTask = new Button("Delete Task");
-        
-        //HBox for current date, add button, and delete button for layout purposes
-        //(D)ate + (A)dd task + (D)elete Task = DAD
-        HBox DAD = new HBox(30, deleteTask, theDay, addTask);
-        DAD.setPadding(new Insets(30));
+        //HBox for current date and add button for layout purposes
+        //(D)ate + (A)dd task + (B)utton = DAB
+        HBox DAB = new HBox(30, theDay, addTask);
+        DAB.setPadding(new Insets(30));
         //set alignment
-        DAD.setAlignment(Pos.CENTER);
+        DAB.setAlignment(Pos.CENTER);
 
-        //task list
+        //display the To Do List
         Text list = new Text("To Do List: ");
+        VBox taskList = new VBox(10);
+        //fill list with tasks
+        updateTaskList(taskList, toDoList);
+        //scroller in case of too many tasks
+        ScrollPane scroller = new ScrollPane(taskList);
 
-        //day scroller how to implement?
         //navigator Buttons to Yearly, Monthly, and Daily Views
         Button yearlyView = new Button("Current Year");
         Button monthlyView = new Button("Current Month");
@@ -250,7 +245,7 @@ public class CalendarApp extends Application {
         navigationBar.setStyle("-fx-background-color: green");
 
         //VBox to hold it all togther
-        VBox mainContent = new VBox(30, header, DAD, list, navigationBar);
+        VBox mainContent = new VBox(30, header, DAB, list, scroller, navigationBar);
         mainContent.setPadding(new Insets(30));
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
@@ -262,7 +257,6 @@ public class CalendarApp extends Application {
     }//end of dailyScene()
 
     private Scene taskScene(){
-        //each label will be placed in an HBox with 
         //title of screen
         Text title = new Text();
 
@@ -277,27 +271,39 @@ public class CalendarApp extends Application {
         header.setAlignment(Pos.CENTER);
         header.setStyle("-fx-background-color: green");
 
-        //name label
-        Label name = new Label("Name: ");
-        TextField taskName = new TextField();
-
-        //time label
-        Label time = new Label("Time: ");
-
-        //notes label
-        Label notes = new Label("Notes: ");
+        //default text to avoid input validation
+        //name of the task
+        TextField taskName = new TextField("Name: ");
+        //time to do task
+        TextField taskTime = new TextField("Due By: ");
+        //notes on the task
+        TextField taskDetails = new TextField("Notes: ");
 
         //cancel button
         Button cancel = new Button("Cancel");
         //add event handler
         //canceling sends user back to daily task scene
         cancel.setOnAction(e -> switchScenes(dayScene));
-
         //create button
         Button create = new Button("Create");
         //add event handler
         //create will send user back to update daily task scene 
-        create.setOnAction(e -> switchScenes(dayScene));
+        //action event created with help of ChatGPT
+        create.setOnAction(e -> {
+            //get user input
+            String name = taskName.getText();
+            String time = taskTime.getText();
+            String details = taskDetails.getText();
+            //create the task and add it to the to do list
+            taskAdder myTask = new taskAdder(name, time, details);
+            //add to list
+            toDoList.add(myTask);
+            //reset values
+            taskName.setText("Name");
+            taskTime.setText("Due By: ");
+            taskDetails.setText("Notes: ");
+            switchScenes(dayScene);
+        });
 
         //HBox for layout
         HBox buttons = new HBox(30, cancel, create);
@@ -306,7 +312,7 @@ public class CalendarApp extends Application {
         buttons.setAlignment(Pos.BOTTOM_CENTER);
 
         //Vbox to wrap everything
-        VBox mainContent = new VBox(30, header, taskName, taskTime, taskNotes, buttons);
+        VBox mainContent = new VBox(30, header, taskName, taskTime, taskDetails, buttons);
         mainContent.setPadding(new Insets(30));
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
@@ -319,7 +325,16 @@ public class CalendarApp extends Application {
 
     //method to switch between scenes
     public void switchScenes(Scene tempScene){
-        calendar.setScene(tempScene);
+        //check if tempScene is dayScene
+        //dayScene must be constantly refreshed to ensure accurate task display
+        //ChatGPT suggestion after numerous failed builds
+        if(tempScene == dayScene){
+            dayScene = dailyScene(); //rebuild
+            calendar.setScene(dayScene);
+        }//end of if
+        else{
+            calendar.setScene(tempScene);
+        }//end of else
     }//end of switchScenes()
 
     /* 
@@ -376,7 +391,31 @@ public class CalendarApp extends Application {
         return calendar;
     }//end of createMonthlyCalendar()
 
-    //methods to hold task data
-    
-
+    //refresh task list diplay, made with the help of ChatGPT
+    private static void updateTaskList(VBox b, ArrayList<taskAdder> l){
+        //clears current task list display
+        b.getChildren().clear();
+        //for delete button
+        for(taskAdder task: l){
+            VBox t = new VBox(5);
+            t.setStyle("-fx-border-color: gray; -fx-padding: 10;");
+            //display task details
+            Label name = new Label("Task: " + task.getName());
+            Label time = new Label("Due By: " + task.getTime());
+            Label details = new Label("Details: " + task.getDetails());
+            //add delete button, second functionality
+            Button delete = new Button("Delete Task");
+            //add action event, deletes data from list
+            delete.setOnAction(e -> {
+                l.remove(task);
+                updateTaskList(b, l);
+            });
+            //add to VBox t for formatting
+            t.getChildren().addAll(name, time, details);
+            //HBox for delete button formatting
+            HBox f = new HBox(30, t, delete);
+            //add to original VBox
+            b.getChildren().add(f);
+        }//end of for loop
+    }//end of updateTaskList()
 }//end of calendarApp class 
