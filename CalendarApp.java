@@ -120,8 +120,8 @@ public class CalendarApp extends Application {
         VBox layout = new VBox();
         layout.getChildren().addAll(yearButton, scroller, navigationBar);
 
-        //creates scene 800 pixels wide by 800 pixels tall
-        yearScene = new Scene(layout, 800, 800);
+        //creates scene 550 pixels wide by 800 pixels tall
+        yearScene = new Scene(layout, 550, 800);
         //yearScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
     
         return yearScene;
@@ -137,7 +137,7 @@ public class CalendarApp extends Application {
         Text theMonth = new Text();
         theMonth.setFont(new Font(50)); //set font size
         theMonth.setText(YearMonth.of(currentYear, currentMonth).getMonth().toString()); //set text
-        
+
         //back button
         Button back = new Button("Back");
         back.setOnAction(e -> switchScenes(yearScene)); //add event handler
@@ -145,7 +145,7 @@ public class CalendarApp extends Application {
         //HBox to display header
         HBox header = new HBox(100, back, theMonth);
         header.setPadding(new Insets(30));
-        header.setAlignment(Pos.TOP_CENTER); //set alignment
+        header.setAlignment(Pos.CENTER); //set alignment
         header.setStyle("-fx-background-color: green"); //set background color to green
 
         //navigator Buttons to Yearly, Monthly, and Daily Views
@@ -172,8 +172,8 @@ public class CalendarApp extends Application {
         mainContent.setPadding(new Insets(30));
         mainContent.setAlignment(Pos.CENTER); //set alignment
 
-        //creates scene 450 pixels wide by 450 pixels tall, smaller due to less calendars
-        monthScene = new Scene(mainContent, 450, 450);
+        //creates scene 425 pixels wide by 425 pixels tall, smaller due to less calendars
+        monthScene = new Scene(mainContent, 450, 425);
         //monthScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return monthScene;
     }//end of monthlyScene()
@@ -245,8 +245,8 @@ public class CalendarApp extends Application {
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
         
-        //creates scene 800 pixels wide by 800 pixels tall
-        dayScene = new Scene(mainContent, 800, 800);
+        //creates scene 500 pixels wide by 500 pixels tall
+        dayScene = new Scene(mainContent, 500, 500);
         //dayScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return dayScene;
     }//end of dailyScene()
@@ -276,11 +276,15 @@ public class CalendarApp extends Application {
 
         //cancel button
         Button cancel = new Button("Cancel");
+        //change button color
+        cancel.setStyle("-fx-background-color: red");
         //add event handler
         //canceling sends user back to daily task scene
         cancel.setOnAction(e -> switchScenes(dayScene));
         //create button
         Button create = new Button("Create");
+        //change button color
+        create.setStyle("-fx-background-color: green");
         //add event handler
         //create will send user back to update daily task scene 
         //action event created with help of ChatGPT
@@ -312,8 +316,8 @@ public class CalendarApp extends Application {
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
 
-        //creates scene 800 pixels wide by 800 pixels tall
-        taskScene = new Scene(mainContent, 800, 800);
+        //creates scene 450 pixels wide by 450 pixels tall
+        taskScene = new Scene(mainContent, 450, 450);
         //taskScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return taskScene;
     }//end of taskScene()
@@ -340,22 +344,20 @@ public class CalendarApp extends Application {
         //calendar layout
         VBox calendar = new VBox(5);
         calendar.setStyle("-fx-padding: 10; -fx-border-color: black;");
+        calendar.setAlignment(Pos.CENTER);
         //name of the month
         Label whatMonth = new Label(YearMonth.of(year, month).getMonth().toString());
+        whatMonth.setAlignment(Pos.CENTER);
         //calendar grid
         GridPane mCalendar = new GridPane();
         mCalendar.setHgap(5);
         mCalendar.setVgap(5);
+        mCalendar.setAlignment(Pos.CENTER);
 
         //add headers for each day of the week
-        DayOfWeek[] days = DayOfWeek.values();
-        int tempNum = days.length-1;
-        //add Sunday first
-        String sunday = days[tempNum].toString().substring(0,3);
-        mCalendar.add(new Label(sunday), tempNum, 0);
-        for(int i=0; i<tempNum; i++){
-            String name = days[i].toString().substring(0,3);
-            mCalendar.add(new Label(name), i, 0);
+        String[] days = {"S", "M", "T", "W", "T", "F", "S"};
+        for(int i=0; i<days.length; i++){
+            mCalendar.add(new Label(days[i]), i, 0);
         }//end of for loop
 
         //get month
@@ -373,7 +375,12 @@ public class CalendarApp extends Application {
         int col = startDay;
         for (int j=1; j<=numDays; j++){
             //label for the day
-            mCalendar.add(new Label(String.valueOf(j)), col, row);
+            Label day = new Label(String.valueOf(j));
+            //set size constraints
+            day.setMinSize(15,15);
+            day.setMaxSize(30,30);
+            day.setAlignment(Pos.CENTER);
+            mCalendar.add(day, col, row);
             col++;
             //check if should move to next column so it doesn't go past Saturday
             if(col>6){
@@ -402,6 +409,8 @@ public class CalendarApp extends Application {
             Label details = new Label("Details: " + task.getDetails());
             //add delete button, second functionality
             Button delete = new Button("Delete Task");
+            //change button color
+            delete.setStyle("-fx-background-color: red");
             //add action event, deletes data from list
             delete.setOnAction(e -> {
                 l.remove(task);
