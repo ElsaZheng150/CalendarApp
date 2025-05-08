@@ -143,7 +143,7 @@ public class CalendarApp extends Application {
         back.setOnAction(e -> switchScenes(yearScene)); //add event handler
 
         //HBox to display header
-        HBox header = new HBox(100, back, theMonth);
+        HBox header = new HBox(30, back, theMonth);
         header.setPadding(new Insets(30));
         header.setAlignment(Pos.CENTER); //set alignment
         header.setStyle("-fx-background-color: green"); //set background color to green
