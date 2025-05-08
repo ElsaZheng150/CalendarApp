@@ -245,8 +245,8 @@ public class CalendarApp extends Application {
         //set alignment
         mainContent.setAlignment(Pos.CENTER);
         
-        //creates scene 500 pixels wide by 500 pixels tall
-        dayScene = new Scene(mainContent, 500, 500);
+        //creates scene 650 pixels wide by 650 pixels tall
+        dayScene = new Scene(mainContent, 650, 650);
         //dayScene.getStylesheets().add("/com/javacodejunkie/stylesheet.css");
         return dayScene;
     }//end of dailyScene()
